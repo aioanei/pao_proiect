@@ -1,34 +1,51 @@
-# Proiect PAO - Simulator de Bursă (Trading Terminal)
-
-Acest proiect reprezintă implementarea cerințelor pentru evaluarea la disciplina PAO (Programare Avansată pe Obiecte). Sistemul simulează o piață bursieră în timp real (prin intermediul unui thread separat) unde investitorii pot cumpăra, vizualiza și tranzacționa active financiare.
+# Proiect PAO - Simulator de Bursa (Trading Terminal)
 
 ---
 
-## Definirea Sistemului
+## 1. Definirea Sistemului
 
-### Lista celor 8+ tipuri de obiecte (clase) implementate:
-1. **`Asset`** - Clasă de bază (abstractă) pentru toate activele tranzacționabile.
-2. **`Stock`** - Acțiuni clasice, moștenește `Asset`. Adaugă companie și dividende.
-3. **`Crypto`** - Criptomonede, moștenește `Asset`. Adaugă rețeaua blockchain.
-4. **`User`** - Clasă de bază pentru utilizatorii sistemului.
-5. **`Investor`** - Investitorul activ, moștenește `User`. Conține portofoliul și balanța.
-6. **`PortfolioItem`** - O entitate care reține informații despre ce activ deține un utilizator (cantitate, preț de achiziție).
-7. **`Transaction`** - Istoricul unei tranzacții (conține timestamp, preț, tip).
-8. **`Market`** - Piața agregată; gestionează activele disponibile și motorul de simulare a prețurilor.
-9. **`TransactionType`** - Enum pentru BUY / SELL.
+### Tipurile de obiecte implementate (9 clase/enum-uri)
+In respectarea cerintei de a avea minim 8 tipuri de obiecte, au fost implementate urmatoarele:
 
-### Lista celor 14 acțiuni/interogări:
-1. **Afișarea activelor de pe piață**, ordonate crescător după preț (utilizează colecție sortată automat).
-2. **Înregistrarea automată a unui investitor** și atribuirea unui portofoliu/buget inițial.
-3. **Cumpărarea (Buy)** de active financiare și calcularea prețului mediu de achiziție.
-4. **Vânzarea (Sell)** de active din portofoliu cu validare de cantități.
-5. **Afișarea detaliată a portofoliului**, cu conversia valorii la adusă timpul real al pieței.
-6. **Depunerea de fonduri** externe in contul investitorului.
-7. **Afișarea istoricului tranzacțiilor** (toate acțiunile de BUY/SELL).
-8. **Interogarea celui mai scump activ existent** la un moment dat.
-9. **Afișarea istoricului de preț** pentru a vedea cum a evoluat un activ de la începutul programului.
-10. **Simularea dinamică a pieței (Live Market)** - prețurile evoluează singure continuu folosind Thread-uri.
-11. **Căutarea unui activ după simbol** și afișarea detaliilor lui.
-12. **Filtrarea afișării (doar Acțiuni)** - filtrează de pe piață doar obiectele de tip `Stock`.
-13. **Filtrarea afișării (doar Criptomonede)** - filtrează de pe piață doar obiectele de tip `Crypto`.
-14. **Retragerea de fonduri (Withdraw)** din cont, incluzând check-ul de sumă disponibilă.
+1. **`Asset`** - Clasa de baza (abstracta) pentru toate activele tranzactionabile.
+2. **`Stock`** - Actiuni (mosteneste `Asset`), adauga informatii despre companie si dividende.
+3. **`Crypto`** - Criptomonede (mosteneste `Asset`), adauga informatii despre reteaua de blockchain.
+4. **`User`** - Clasa de baza pentru orice persoana din sistem.
+5. **`Investor`** - Investitor activ (mosteneste `User`). Contine un portofoliu si o balanta financiara.
+6. **`PortfolioItem`** - O entitate ce retine ce activ detine un utilizator in portofoliu, cantitatea lui si pretul mediu de achizitie.
+7. **`Transaction`** - Reprezinta o inregistrare in istoricul tranzactiilor (contine timestamp, pret, tip, suma, etc).
+8. **`Market`** - Clasa ce gestioneaza ansamblul ofertelor de pe piata si mecanismul de modificare a preturilor.
+9. **`TransactionType`** - Enumerare ce defineste tipul unei operatiuni (BUY / SELL).
+
+### Lista celor 14 actiuni / interogari posibile
+Aplicatia acopera (si depaseste) cerinta de a avea minim 10 actiuni si interogari:
+
+1. **Afisarea activelor de pe piata**, sortate crescator dupa pret.
+2. **Afisarea portofoliului**, aratand profitul raportat la preturile live.
+3. **Cumpararea (Buy)** de active cu validarea balantei.
+4. **Vanzarea (Sell)** de active din portofoliu.
+5. **Depunerea (Deposit)** fondurilor.
+6. **Retragerea (Withdraw)** fondurilor.
+7. **Afisarea istoricului tranzactiilor** (BUY/SELL).
+8. **Interogarea celui mai scump activ** de pe piata.
+9. **Afisarea istoricului de pret** pentru un anumit activ in timp (se salveaza istoric pentru preturile care s-au schimbat).
+10. **Cautarea unui activ** dupa simbol (ex: AAPL).
+11. **Filtrarea pietei: Doar Actiuni**.
+12. **Filtrarea pietei: Doar Criptomonede**.
+13. **Generarea automata a fluctuatiei preturilor** folosind Thread-uri in background (Live Market).
+14. **Inregistrarea automata a investitorului** cu sold initial.
+
+---
+
+## 2. Implementarea Cerintelor Tehnice
+
+Structura si arhitectura aplicatiei acopera toate cerintele specifice:
+
+* **Clase simple & Incapsulare:** Toate clasele (inclusiv extensiile) folosesc `protected` sau `private`, iar prelucrarea si alocarea se face via `getters/setters`.
+* **Colectii diferite (inclusiv una sortata):**
+  * `TreeSet<Asset>`: Se afla in interiorul `Market`. Asigura ca elementele sunt constant sortate dupa pret (datorita utilizarii `Comparable` pe clasa de baza `Asset`).
+  * `Map<String, PortfolioItem>`: Interfata cheie-valoare din interiorul agragatorului `Investor`. Key String-ul este simbolul companiei si asigura ca la cumparare complexitatea verificarilor si update-urilor portofoliului e de `O(1)`.
+  * `List<Transaction>` si `List<Double>`: Folosite pentru stocarea statica a istoricului actiunilor pe cont, respectiv evolutia ratei actiunilor.
+* **Mostenire si Polimorfism:** Relatia de agregare a pietelor este strict construita pe polimorfism. Investitorul cumpara si piata stocheaza `Asset`, care sub acoperire poarta insemnele specifice fie a `Stock` (dividende) fie a `Crypto` (blockchain network). Aceeasi ierarhie a fost formata la sistemul de autentificare: `User` extins cu unelte financiare formand `Investor`.
+* **Clase Serviciu:** Centralizate in `TradingService`, decuplate de partea CLI afisata pe ecran in meniu.
+* **Control Main:** Intrarea principala de loop pentru utilizator `(while-Scanner)` unde acesta alege una dintre cele peste 13 functii implementate.
