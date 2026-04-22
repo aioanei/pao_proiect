@@ -26,7 +26,11 @@ public class Main {
             System.out.println("6. Afiseaza istoricul tranzactiilor");
             System.out.println("7. Vezi cel mai scump activ de pe piata");
             System.out.println("8. Vezi istoricul pretului pentru un activ");
-            System.out.println("9. Iesire");
+            System.out.println("9. Cauta un activ dupa simbol");
+            System.out.println("10. Afiseaza doar actiunile (Stocks)");
+            System.out.println("11. Afiseaza doar criptomonedele");
+            System.out.println("12. Retrage fonduri");
+            System.out.println("13. Iesire");
             System.out.print("Alegeti o actiune: ");
 
             int choice = -1;
@@ -69,6 +73,18 @@ public class Main {
                     service.viewAssetPriceHistory(historySymbol);
                     break;
                 case 9:
+                    System.out.print("Simbolul activului de cautat: ");
+                    String searchSymbol = scanner.nextLine().toUpperCase();
+                    service.searchAsset(searchSymbol);
+                    break;
+                case 10: service.viewStocksOnly(); break;
+                case 11: service.viewCryptosOnly(); break;
+                case 12:
+                    System.out.print("Suma de retras ($): ");
+                    double withdrawAmount = scanner.nextDouble();
+                    service.withdrawFunds(withdrawAmount);
+                    break;
+                case 13:
                     running = false;
                     System.out.println("La revedere!");
                     break;

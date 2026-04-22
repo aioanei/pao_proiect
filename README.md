@@ -17,7 +17,7 @@ Acest proiect reprezintă implementarea cerințelor pentru evaluarea la discipli
 8. **`Market`** - Piața agregată; gestionează activele disponibile și motorul de simulare a prețurilor.
 9. **`TransactionType`** - Enum pentru BUY / SELL.
 
-### Lista celor 10+ acțiuni/interogări:
+### Lista celor 14 acțiuni/interogări:
 1. **Afișarea activelor de pe piață**, ordonate crescător după preț (utilizează colecție sortată automat).
 2. **Înregistrarea automată a unui investitor** și atribuirea unui portofoliu/buget inițial.
 3. **Cumpărarea (Buy)** de active financiare și calcularea prețului mediu de achiziție.
@@ -27,3 +27,8 @@ Acest proiect reprezintă implementarea cerințelor pentru evaluarea la discipli
 7. **Afișarea istoricului tranzacțiilor** (toate acțiunile de BUY/SELL).
 8. **Interogarea celui mai scump activ existent** la un moment dat.
 9. **Afișarea istoricului de preț** pentru a vedea cum a evoluat un activ de la începutul programului.
+10. **Simularea dinamică a pieței (Live Market)** - prețurile evoluează singure continuu folosind Thread-uri.
+11. **Căutarea unui activ după simbol** și afișarea detaliilor lui.
+12. **Filtrarea afișării (doar Acțiuni)** - filtrează de pe piață doar obiectele de tip `Stock`.
+13. **Filtrarea afișării (doar Criptomonede)** - filtrează de pe piață doar obiectele de tip `Crypto`.
+14. **Retragerea de fonduri (Withdraw)** din cont, incluzând check-ul de sumă disponibilă.

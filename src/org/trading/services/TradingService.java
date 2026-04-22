@@ -167,4 +167,41 @@ public class TradingService {
             System.out.printf("Trecut %d tick(-uri) de la inceput: $%.2f%n", i, history.get(i));
         }
     }
+
+    public void searchAsset(String symbol) {
+        Asset asset = market.getAssetBySymbol(symbol);
+        if (asset == null) {
+            System.out.println("Activul " + symbol + " nu a fost gasit pe piata.");
+        } else {
+            System.out.println("Rezultat cautare: " + asset.toString());
+        }
+    }
+
+    public void viewStocksOnly() {
+        System.out.println("\n--- Actiuni (Stocks) disponibile ---");
+        for (Asset asset : market.getAssets()) {
+            if (asset instanceof Stock) {
+                System.out.println(asset);
+            }
+        }
+    }
+
+    public void viewCryptosOnly() {
+        System.out.println("\n--- Criptomonede disponibile ---");
+        for (Asset asset : market.getAssets()) {
+            if (asset instanceof Crypto) {
+                System.out.println(asset);
+            }
+        }
+    }
+
+    public void withdrawFunds(double amount) {
+        if (activeInvestor == null) return;
+        if (amount > activeInvestor.getBalance()) {
+            System.out.println("Fonduri insuficiente pentru retragere! Balanta curenta: $" + activeInvestor.getBalance());
+            return;
+        }
+        activeInvestor.setBalance(activeInvestor.getBalance() - amount);
+        System.out.printf("S-au retras $%.2f. Noua balanta: $%.2f%n", amount, activeInvestor.getBalance());
+    }
 }
