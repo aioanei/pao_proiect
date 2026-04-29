@@ -7,7 +7,6 @@ import java.util.Map;
 
 public class Investor extends User {
     private double balance;
-    // Map pentru acces O(1) la detinerile curent
     private Map<String, PortfolioItem> portfolio;
     private List<Transaction> transactions;
 
@@ -16,6 +15,11 @@ public class Investor extends User {
         this.balance = initialBalance;
         this.portfolio = new HashMap<>();
         this.transactions = new ArrayList<>();
+    }
+
+    @Override
+    public void displayRole() {
+        System.out.println("Rol utilizator: Investitor (cu portofoliu si balanta)");
     }
 
     public double getBalance() { return balance; }
