@@ -49,3 +49,44 @@ Structura si arhitectura aplicatiei acopera toate cerintele specifice:
 * **Mostenire si Polimorfism:** Relatia de agregare a pietelor este strict construita pe polimorfism. Investitorul cumpara si piata stocheaza `Asset`, care sub acoperire poarta insemnele specifice fie a `Stock` (dividende) fie a `Crypto` (blockchain network). Aceeasi ierarhie a fost formata la sistemul de autentificare: `User` extins cu unelte financiare formand `Investor`.
 * **Clase Serviciu:** Centralizate in `TradingService`, decuplate de partea CLI afisata pe ecran in meniu.
 * **Control Main:** Intrarea principala de loop pentru utilizator `(while-Scanner)` unde acesta alege una dintre cele peste 13 functii implementate.
+
+---
+
+## 3. Extindere Etapa 2 - JDBC, baza de date relationala si audit
+
+Persistenta este implementata prin JDBC, folosind o baza de date relationala H2 configurata in `database.properties`.
+Schema este creata automat la pornirea aplicatiei, iar fisierele generate se afla in directorul `data/`.
+
+### Servicii singleton CRUD
+
+Au fost adaugate servicii repository singleton, bazate pe interfata generica `CrudRepository<T, K>`, pentru urmatoarele clase:
+
+1. `StockRepository` - CRUD pentru `Stock`.
+2. `CryptoRepository` - CRUD pentru `Crypto`.
+3. `InvestorRepository` - CRUD pentru `Investor`.
+4. `TransactionRepository` - CRUD pentru `Transaction`.
+
+In plus, `PortfolioItemRepository` salveaza portofoliul investitorului in tabela `portfolio_items`.
+
+### Serviciu de audit
+
+`AuditService` scrie in `data/audit.csv` fiecare actiune executata din aplicatie, cu structura:
+
+```csv
+nume_actiune,timestamp
+```
+
+### Rulare
+
+Cu Maven instalat:
+
+```powershell
+mvn compile exec:java
+```
+
+Fara Maven, descarcati driverul H2 in `lib/h2-2.2.224.jar`, apoi rulati:
+
+```powershell
+javac -cp "lib/h2-2.2.224.jar" -d bin (Get-ChildItem -Recurse src -Filter *.java).FullName
+java -cp "bin;lib/h2-2.2.224.jar" org.trading.Main
+```

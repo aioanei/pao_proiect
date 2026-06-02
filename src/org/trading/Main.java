@@ -85,6 +85,7 @@ public class Main {
                     service.withdrawFunds(withdrawAmount);
                     break;
                 case 13:
+                    service.exitApplication();
                     running = false;
                     System.out.println("La revedere!");
                     break;
