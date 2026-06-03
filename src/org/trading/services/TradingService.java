@@ -170,6 +170,8 @@ public class TradingService {
         if (activeInvestor == null) return;
         System.out.println("\n--- Portofoliul lui " + activeInvestor.getUsername() + " ---");
         System.out.printf("Balanta curenta: $%.2f%n", activeInvestor.getBalance());
+        int totalOwnedQuantity = portfolioItemRepository.totalQuantityForInvestor(activeInvestor.getUsername());
+        System.out.println("Numar total de unitati detinute: " + totalOwnedQuantity);
         
         double totalValue = activeInvestor.getBalance();
         

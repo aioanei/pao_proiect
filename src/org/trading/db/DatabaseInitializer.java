@@ -63,6 +63,21 @@ public final class DatabaseInitializer {
                         FOREIGN KEY (username) REFERENCES investors(username) ON DELETE SET NULL
                     )
                     """);
+            statement.execute("""
+                    CREATE OR REPLACE FUNCTION total_portfolio_quantity(p_username VARCHAR)
+                    RETURNS INTEGER AS $$
+                    DECLARE
+                        total_quantity INTEGER;
+                    BEGIN
+                        SELECT COALESCE(SUM(quantity), 0)::INTEGER
+                        INTO total_quantity
+                        FROM portfolio_items
+                        WHERE username = p_username;
+
+                        RETURN total_quantity;
+                    END;
+                    $$ LANGUAGE plpgsql
+                    """);
         } catch (SQLException e) {
             throw new IllegalStateException("Nu s-a putut initializa schema bazei de date.", e);
         }

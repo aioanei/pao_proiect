@@ -3,10 +3,12 @@ package org.trading.repositories;
 import org.trading.models.Asset;
 import org.trading.models.PortfolioItem;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -149,6 +151,19 @@ public final class PortfolioItemRepository extends AbstractJdbcRepository<Portfo
             statement.executeUpdate();
         } catch (SQLException e) {
             throw databaseError("delete portfolio item", e);
+        }
+    }
+
+    public int totalQuantityForInvestor(String username) {
+        String sql = "{ ? = call total_portfolio_quantity(?) }";
+        try (Connection connection = getConnection();
+             CallableStatement statement = connection.prepareCall(sql)) {
+            statement.registerOutParameter(1, Types.INTEGER);
+            statement.setString(2, username);
+            statement.execute();
+            return statement.getInt(1);
+        } catch (SQLException e) {
+            throw databaseError("call total_portfolio_quantity", e);
         }
     }
 
