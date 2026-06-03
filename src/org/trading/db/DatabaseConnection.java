@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public final class DatabaseConnection {
-    private static final String DEFAULT_DRIVER = "org.h2.Driver";
-    private static final String DEFAULT_URL = "jdbc:h2:./data/trading_db";
-    private static final String DEFAULT_USER = "sa";
-    private static final String DEFAULT_PASSWORD = "";
+    private static final String DEFAULT_DRIVER = "org.postgresql.Driver";
+    private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/trading_db";
+    private static final String DEFAULT_USER = "postgres";
+    private static final String DEFAULT_PASSWORD = "postgres";
 
     private static DatabaseConnection instance;
 
@@ -28,7 +28,6 @@ public final class DatabaseConnection {
         this.user = properties.getProperty("db.user", DEFAULT_USER);
         this.password = properties.getProperty("db.password", DEFAULT_PASSWORD);
 
-        createDataDirectory();
         loadDriver(driver);
     }
 
@@ -56,14 +55,6 @@ public final class DatabaseConnection {
             return properties;
         } catch (IOException e) {
             throw new IllegalStateException("Nu s-a putut citi configurarea bazei de date.", e);
-        }
-    }
-
-    private void createDataDirectory() {
-        try {
-            Files.createDirectories(Path.of("data"));
-        } catch (IOException e) {
-            throw new IllegalStateException("Nu s-a putut crea directorul data pentru baza de date.", e);
         }
     }
 

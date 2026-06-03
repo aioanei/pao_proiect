@@ -54,8 +54,8 @@ Structura si arhitectura aplicatiei acopera toate cerintele specifice:
 
 ## 3. Extindere Etapa 2 - JDBC, baza de date relationala si audit
 
-Persistenta este implementata prin JDBC, folosind o baza de date relationala H2 configurata in `database.properties`.
-Schema este creata automat la pornirea aplicatiei, iar fisierele generate se afla in directorul `data/`.
+Persistenta este implementata prin JDBC, folosind o baza de date relationala PostgreSQL configurata in `database.properties`.
+Schema tabelelor este creata automat la pornirea aplicatiei. Baza de date PostgreSQL trebuie sa existe inainte de rulare.
 
 ### Servicii singleton CRUD
 
@@ -78,15 +78,30 @@ nume_actiune,timestamp
 
 ### Rulare
 
+Configurare PostgreSQL minima:
+
+```sql
+CREATE DATABASE trading_db;
+```
+
+Actualizati `database.properties` daca userul, parola, hostul sau portul PostgreSQL difera:
+
+```properties
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://localhost:5432/trading_db
+db.user=postgres
+db.password=postgres
+```
+
 Cu Maven instalat:
 
 ```powershell
 mvn compile exec:java
 ```
 
-Fara Maven, descarcati driverul H2 in `lib/h2-2.2.224.jar`, apoi rulati:
+Fara Maven, descarcati driverul pgJDBC in `lib/postgresql-42.7.11.jar`, apoi rulati:
 
 ```powershell
-javac -cp "lib/h2-2.2.224.jar" -d bin (Get-ChildItem -Recurse src -Filter *.java).FullName
-java -cp "bin;lib/h2-2.2.224.jar" org.trading.Main
+javac -cp "lib/postgresql-42.7.11.jar" -d bin (Get-ChildItem -Recurse src -Filter *.java).FullName
+java -cp "bin;lib/postgresql-42.7.11.jar" org.trading.Main
 ```
