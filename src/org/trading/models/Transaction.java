@@ -8,15 +8,15 @@ public class Transaction {
     private String username;
     private TransactionType type;
     private String assetSymbol;
-    private int quantity;
+    private double quantity;
     private double pricePerUnit;
     private LocalDateTime timestamp;
 
-    public Transaction(TransactionType type, String assetSymbol, int quantity, double pricePerUnit) {
+    public Transaction(TransactionType type, String assetSymbol, double quantity, double pricePerUnit) {
         this(0, null, type, assetSymbol, quantity, pricePerUnit, LocalDateTime.now());
     }
 
-    public Transaction(long id, String username, TransactionType type, String assetSymbol, int quantity, double pricePerUnit, LocalDateTime timestamp) {
+    public Transaction(long id, String username, TransactionType type, String assetSymbol, double quantity, double pricePerUnit, LocalDateTime timestamp) {
         this.id = id;
         this.username = username;
         this.type = type;
@@ -38,8 +38,8 @@ public class Transaction {
     public String getAssetSymbol() { return assetSymbol; }
     public void setAssetSymbol(String assetSymbol) { this.assetSymbol = assetSymbol; }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public double getQuantity() { return quantity; }
+    public void setQuantity(double quantity) { this.quantity = quantity; }
 
     public double getPricePerUnit() { return pricePerUnit; }
     public void setPricePerUnit(double pricePerUnit) { this.pricePerUnit = pricePerUnit; }
@@ -50,6 +50,6 @@ public class Transaction {
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        return String.format("[%s] %s: %d units of %s at $%.2f", timestamp.format(formatter), type, quantity, assetSymbol, pricePerUnit);
+        return String.format("[%s] %s: %.6f units of %s at $%.2f", timestamp.format(formatter), type, quantity, assetSymbol, pricePerUnit);
     }
 }

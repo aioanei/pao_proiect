@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -42,10 +41,10 @@ public final class PortfolioItemRepository extends AbstractJdbcRepository<Portfo
                 VALUES (?, ?, ?, ?)
                 """;
         try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+            PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
             statement.setString(2, item.getAsset().getSymbol());
-            statement.setInt(3, item.getQuantity());
+            statement.setDouble(3, item.getQuantity());
             statement.setDouble(4, item.getAverageBuyPrice());
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -119,7 +118,7 @@ public final class PortfolioItemRepository extends AbstractJdbcRepository<Portfo
                 """;
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, item.getQuantity());
+            statement.setDouble(1, item.getQuantity());
             statement.setDouble(2, item.getAverageBuyPrice());
             statement.setString(3, username);
             statement.setString(4, item.getAsset().getSymbol());
@@ -154,14 +153,14 @@ public final class PortfolioItemRepository extends AbstractJdbcRepository<Portfo
         }
     }
 
-    public int totalQuantityForInvestor(String username) {
+    public double totalQuantityForInvestor(String username) {
         String sql = "{ ? = call total_portfolio_quantity(?) }";
         try (Connection connection = getConnection();
              CallableStatement statement = connection.prepareCall(sql)) {
-            statement.registerOutParameter(1, Types.INTEGER);
+            statement.registerOutParameter(1, java.sql.Types.DOUBLE);
             statement.setString(2, username);
             statement.execute();
-            return statement.getInt(1);
+            return statement.getDouble(1);
         } catch (SQLException e) {
             throw databaseError("call total_portfolio_quantity", e);
         }
@@ -172,7 +171,7 @@ public final class PortfolioItemRepository extends AbstractJdbcRepository<Portfo
         Asset asset = findAsset(symbol);
         return new PortfolioItem(
                 asset,
-                resultSet.getInt("quantity"),
+                resultSet.getDouble("quantity"),
                 resultSet.getDouble("average_buy_price")
         );
     }

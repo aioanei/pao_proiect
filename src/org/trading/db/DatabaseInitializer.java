@@ -45,7 +45,7 @@ public final class DatabaseInitializer {
                     CREATE TABLE IF NOT EXISTS portfolio_items (
                         username VARCHAR(100) NOT NULL,
                         asset_symbol VARCHAR(20) NOT NULL,
-                        quantity INTEGER NOT NULL,
+                        quantity DOUBLE PRECISION NOT NULL,
                         average_buy_price DOUBLE PRECISION NOT NULL,
                         PRIMARY KEY (username, asset_symbol),
                         FOREIGN KEY (username) REFERENCES investors(username) ON DELETE CASCADE
@@ -57,19 +57,30 @@ public final class DatabaseInitializer {
                         username VARCHAR(100),
                         type VARCHAR(10) NOT NULL,
                         asset_symbol VARCHAR(20) NOT NULL,
-                        quantity INTEGER NOT NULL,
+                        quantity DOUBLE PRECISION NOT NULL,
                         price_per_unit DOUBLE PRECISION NOT NULL,
                         created_at TIMESTAMP NOT NULL,
                         FOREIGN KEY (username) REFERENCES investors(username) ON DELETE SET NULL
                     )
                     """);
+            statement.execute("DROP FUNCTION IF EXISTS total_portfolio_quantity(VARCHAR)");
+            statement.execute("""
+                    ALTER TABLE portfolio_items
+                    ALTER COLUMN quantity TYPE DOUBLE PRECISION
+                    USING quantity::DOUBLE PRECISION
+                    """);
+            statement.execute("""
+                    ALTER TABLE transactions
+                    ALTER COLUMN quantity TYPE DOUBLE PRECISION
+                    USING quantity::DOUBLE PRECISION
+                    """);
             statement.execute("""
                     CREATE OR REPLACE FUNCTION total_portfolio_quantity(p_username VARCHAR)
-                    RETURNS INTEGER AS $$
+                    RETURNS DOUBLE PRECISION AS $$
                     DECLARE
-                        total_quantity INTEGER;
+                        total_quantity DOUBLE PRECISION;
                     BEGIN
-                        SELECT COALESCE(SUM(quantity), 0)::INTEGER
+                        SELECT COALESCE(SUM(quantity), 0)
                         INTO total_quantity
                         FROM portfolio_items
                         WHERE username = p_username;

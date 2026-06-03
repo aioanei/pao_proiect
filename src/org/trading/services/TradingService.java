@@ -10,6 +10,8 @@ import org.trading.repositories.StockRepository;
 import org.trading.repositories.TransactionRepository;
 
 public class TradingService {
+    private static final double MIN_QUANTITY = 0.000001;
+
     private Market market;
     private Investor activeInvestor;
     private final AuditService auditService;
@@ -84,7 +86,7 @@ public class TradingService {
         liveThread.start();
     }
 
-    public void buyAsset(String symbol, int quantity) {
+    public void buyAsset(String symbol, double quantity) {
         auditService.logAction("buy_asset");
         if (activeInvestor == null) return;
         if (quantity <= 0) {
@@ -108,7 +110,7 @@ public class TradingService {
         
         PortfolioItem pItem = activeInvestor.getPortfolio().getOrDefault(symbol, new PortfolioItem(asset, 0, 0));
         double previousTotalCost = pItem.getQuantity() * pItem.getAverageBuyPrice();
-        int newQuantity = pItem.getQuantity() + quantity;
+        double newQuantity = pItem.getQuantity() + quantity;
         double newAvgPrice = (previousTotalCost + totalCost) / newQuantity;
         
         pItem.setQuantity(newQuantity);
@@ -122,10 +124,10 @@ public class TradingService {
         portfolioItemRepository.upsertForInvestor(activeInvestor.getUsername(), pItem);
         transactionRepository.create(t);
 
-        System.out.println("Achizitie reusita: " + quantity + " x " + symbol + " | Total: $" + totalCost);
+        System.out.printf("Achizitie reusita: %.6f x %s | Total: $%.2f%n", quantity, symbol, totalCost);
     }
 
-    public void sellAsset(String symbol, int quantity) {
+    public void sellAsset(String symbol, double quantity) {
         auditService.logAction("sell_asset");
         if (activeInvestor == null) return;
         if (quantity <= 0) {
@@ -134,7 +136,7 @@ public class TradingService {
         }
         
         PortfolioItem pItem = activeInvestor.getPortfolio().get(symbol);
-        if (pItem == null || pItem.getQuantity() < quantity) {
+        if (pItem == null || pItem.getQuantity() + MIN_QUANTITY < quantity) {
             System.out.println("Nu detii suficient " + symbol + " pentru a vinde.");
             return;
         }
@@ -149,7 +151,7 @@ public class TradingService {
         activeInvestor.setBalance(activeInvestor.getBalance() + totalRevenue);
         pItem.setQuantity(pItem.getQuantity() - quantity);
 
-        if (pItem.getQuantity() == 0) {
+        if (pItem.getQuantity() <= MIN_QUANTITY) {
             activeInvestor.getPortfolio().remove(symbol);
             portfolioItemRepository.deleteForInvestor(activeInvestor.getUsername(), symbol);
         } else {
@@ -162,7 +164,7 @@ public class TradingService {
         investorRepository.update(activeInvestor);
         transactionRepository.create(t);
 
-        System.out.println("Vanzare reusita: " + quantity + " x " + symbol + " | Total obtinut: $" + totalRevenue);
+        System.out.printf("Vanzare reusita: %.6f x %s | Total obtinut: $%.2f%n", quantity, symbol, totalRevenue);
     }
 
     public void viewPortfolio() {
@@ -170,8 +172,8 @@ public class TradingService {
         if (activeInvestor == null) return;
         System.out.println("\n--- Portofoliul lui " + activeInvestor.getUsername() + " ---");
         System.out.printf("Balanta curenta: $%.2f%n", activeInvestor.getBalance());
-        int totalOwnedQuantity = portfolioItemRepository.totalQuantityForInvestor(activeInvestor.getUsername());
-        System.out.println("Numar total de unitati detinute: " + totalOwnedQuantity);
+        double totalOwnedQuantity = portfolioItemRepository.totalQuantityForInvestor(activeInvestor.getUsername());
+        System.out.printf("Numar total de unitati detinute: %.6f%n", totalOwnedQuantity);
         
         double totalValue = activeInvestor.getBalance();
         
@@ -184,7 +186,7 @@ public class TradingService {
                 double itemTotalValue = currentPrice * item.getQuantity();
                 totalValue += itemTotalValue;
 
-                System.out.printf("%s : %d buc | Pret mediu cumparare: $%.2f | Pret curent: $%.2f | Valoare totala: $%.2f%n",
+                System.out.printf("%s : %.6f buc | Pret mediu cumparare: $%.2f | Pret curent: $%.2f | Valoare totala: $%.2f%n",
                         item.getAsset().getSymbol(), item.getQuantity(), item.getAverageBuyPrice(), currentPrice, itemTotalValue);
             }
         }

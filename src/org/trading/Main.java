@@ -13,7 +13,7 @@ public class Main {
         System.out.println("=== TERMINAL BURSA ===");
         
         service.registerInvestor("Investitor", 10000.0);
-        service.startLiveMarket(); // Pornim simularea dinamica in fundal DOAR DUPA initializare
+        service.startLiveMarket();
         
         boolean running = true;
         while (running) {
@@ -50,14 +50,14 @@ public class Main {
                     System.out.print("Simbolul activului dorit (ex: AAPL, BTC): ");
                     String buySymbol = scanner.nextLine().toUpperCase();
                     System.out.print("Cantitate: ");
-                    int buyQty = scanner.nextInt();
+                    double buyQty = scanner.nextDouble();
                     service.buyAsset(buySymbol, buyQty);
                     break;
                 case 4:
                     System.out.print("Simbolul activului de vandut: ");
                     String sellSymbol = scanner.nextLine().toUpperCase();
                     System.out.print("Cantitate: ");
-                    int sellQty = scanner.nextInt();
+                    double sellQty = scanner.nextDouble();
                     service.sellAsset(sellSymbol, sellQty);
                     break;
                 case 5:

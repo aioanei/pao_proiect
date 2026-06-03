@@ -33,11 +33,11 @@ public final class TransactionRepository extends AbstractJdbcRepository<Transact
                 VALUES (?, ?, ?, ?, ?, ?)
                 """;
         try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, transaction.getUsername());
             statement.setString(2, transaction.getType().name());
             statement.setString(3, transaction.getAssetSymbol());
-            statement.setInt(4, transaction.getQuantity());
+            statement.setDouble(4, transaction.getQuantity());
             statement.setDouble(5, transaction.getPricePerUnit());
             statement.setTimestamp(6, Timestamp.valueOf(transaction.getTimestamp()));
             statement.executeUpdate();
@@ -127,7 +127,7 @@ public final class TransactionRepository extends AbstractJdbcRepository<Transact
             statement.setString(1, transaction.getUsername());
             statement.setString(2, transaction.getType().name());
             statement.setString(3, transaction.getAssetSymbol());
-            statement.setInt(4, transaction.getQuantity());
+            statement.setDouble(4, transaction.getQuantity());
             statement.setDouble(5, transaction.getPricePerUnit());
             statement.setTimestamp(6, Timestamp.valueOf(transaction.getTimestamp()));
             statement.setLong(7, transaction.getId());
@@ -156,7 +156,7 @@ public final class TransactionRepository extends AbstractJdbcRepository<Transact
                 resultSet.getString("username"),
                 TransactionType.valueOf(resultSet.getString("type")),
                 resultSet.getString("asset_symbol"),
-                resultSet.getInt("quantity"),
+                resultSet.getDouble("quantity"),
                 resultSet.getDouble("price_per_unit"),
                 timestamp.toLocalDateTime()
         );
